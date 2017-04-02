@@ -5,7 +5,7 @@
 #include <math.h>
 int yyparse(void);
 %}
-%token NEWLINE INTEGER PLUS MINUS TIMES DIVIDE LP RP RAISE NEG
+%token NEWLINE REALNUM PLUS MINUS TIMES DIVIDE LP RP RAISE NEG
 %%
 
 commands: command {printf("DONE\n");}
@@ -21,15 +21,16 @@ term : term TIMES factor {$$ = $1 * $3;}
 |term DIVIDE factor {$$ = $1 / $3;}
 |factor {$$ = $1;}
 
-/*factor : INTEGER {$$ = $1;}
+/*factor : REALNUM {$$ = $1;}
 |LP exp RP {$$ = $2;}*/
 
 factor : num RAISE factor {$$ = pow($1, $3);}
 |num {$$ = $1;}
 
-num : INTEGER {$$ = $1;}
-|MINUS INTEGER {$$ = -$2;}
+num : REALNUM {$$ = $1;}
+|MINUS REALNUM {$$ = -$2;}
 |MINUS parenthesised {$$ = -$2;}
+|parenthesised {$$ = $1;}
 
 parenthesised : LP exp RP {$$ = $2;}
 
@@ -41,5 +42,5 @@ int main() {
 }
 
 int yyerror(char* s) {
-	fprintf(stderr, "%s", s);
+	fprintf(stderr, "%s\n", s);
 }
